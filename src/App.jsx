@@ -180,7 +180,7 @@ const App = () => {
   const galleryItems = [
     { src: "IMG-20231218-WA0009.jpg", title: "Beda Ghat", date: "Dec 2023" },
     { src: "IMG-20240819-WA0166.jpg", title: "Raksha Bandhan", date: "August 2024" },
-    { src: "IMG-20240907-WA0187.jpg", title: "Random Clicks", date: "September 2024" },
+    { src: "IMG-20240907-WA0187.jpg", title: "Ganesh Chaturthi", date: "September 2024" },
     { src: "IMG-20240930-WA0035.jpg", title: "Escape to Dumna", date: "March 2024" },
     { src: "IMG-20241027-WA0012.jpg", title: "Parle G Heist", date: "January 2025" },
     { src: "IMG_20241202_142228902_HDR.jpg", title: "Our Trip to the PachMarchi", date: "December 2024" },
@@ -199,27 +199,19 @@ const App = () => {
   ]
 
   const timelineItems = [
-    { year: "2010", text: "Family vacation where we got lost...", side: "left" },
-    { year: "2015", text: "Stayed up all night talking...", side: "right" },
-    { year: "2018", text: "Concert where we danced...", side: "left" },
-    { year: "2020", text: "Weekly video calls during lockdown...", side: "right" },
-    { year: "2023", text: "Incredible road trip...", side: "left" },
-    { year: "2024", text: "More adventures to come...", side: "right" },
-  ]
+    { year: "📍 December 2023 – Where It All Began", text: "Our paths crossed for the first time on our trip to Bhedaghat, a moment that set everything in motion.", side: "left" },
+    { year: "🍽 Semester 2 – Shared Meals, Shared Smiles", text: "From sitting together to sharing countless meals, a quiet friendship started to bloom.", side: "right" },
+    { year: "🎀 August 2024 – A New Bond", text: "The day you tied a rakhi, turning friendship into a bond that felt like family.", side: "left" },
+    { year: "💬 Semester 3 – Endless Conversations & Laughter", text: "From endless chit-chats to unforgettable moments, every day was filled with joy.", side: "right" },
+    { year: "💖 Semester 4 – Not Just Friends, But Family", text: "You’re no longer just a good friend—you’ve become my little, cute sister.", side: "left" }
+  ];
+
 
   const wishes = [
     { from: "Mom", text: "Happy birthday to my beautiful daughter..." },
     { from: "Dad", text: "To my amazing daughter..." },
     { from: "Best Friend", text: "Happy birthday to my crazy, fun friend..." },
     { from: "Grandma", text: "Wishing my sweet granddaughter..." },
-  ]
-
-  const playlist = [
-    "Birthday by The Beatles",
-    "Count On Me by Bruno Mars",
-    "Happy by Pharrell Williams",
-    "Sisters by Rosemary Clooney",
-    "You have Got a Friend by James Taylor",
   ]
 
   return (
@@ -289,22 +281,7 @@ const App = () => {
         </motion.div>
       )}
 
-      {/* Message */}
-      <section id="message" ref={messageRef}>
-        <div className="container">
-          <motion.div className="section-title" initial="hidden" animate={messageControls} variants={fadeInUp}>
-            <h2>A Special Message</h2>
-            <p>From me to you</p>
-          </motion.div>
-          <motion.div className="message-container" initial="hidden" animate={messageControls} variants={fadeInUp}>
-            <p>Dear Sister,</p>
-            <p>On your special day, I want to tell you how much you mean to me...</p>
-            <p>Your kindness, strength, and humor inspire me every day...</p>
-            <p>Happy Birthday! I love you!</p>
-            <p>Your sibling</p>
-          </motion.div>
-        </div>
-      </section>
+
 
       {/* Timeline */}
       <section id="timeline" ref={timelineRef}>
@@ -335,55 +312,32 @@ const App = () => {
         </div>
       </section>
 
-      {/* Wishes */}
-      <section id="wishes" ref={wishesRef}>
+      {/* Message */}
+      <section id="message" ref={messageRef}>
         <div className="container">
-          <motion.div className="section-title" initial="hidden" animate={wishesControls} variants={fadeInUp}>
-            <h2>Birthday Wishes</h2>
-            <p>From everyone who loves you</p>
+          <motion.div className="section-title" initial="hidden" animate={messageControls} variants={fadeInUp}>
+            <h2>A Special Message</h2>
+            <p>From me to you</p>
           </motion.div>
-          <div className="wishes-container">
-            {wishes.map((wish, index) => (
-              <motion.div
-                className="wish-card"
-                key={index}
-                initial="hidden"
-                animate={wishesControls}
-                variants={scaleIn}
-                whileHover={{ scale: 1.05 }}
-              >
-                <h3>{wish.from}</h3>
-                <p>{wish.text}</p>
-              </motion.div>
-            ))}
-          </div>
+          <motion.div className="message-container" initial="hidden" animate={messageControls} variants={fadeInUp}>
+            <p>Dear Sister,</p>
+
+            <p>On your special day, I just want to remind you how much you mean to me...</p>
+            <p>You have always been there for me whenever I needed you the most.</p>
+            <p>You were the one person I could share anything with, without hesitation.</p>
+
+            <p style={{ fontWeight: 600 }}>Happy Birthday! Love you!</p>
+
+            <p style={{ fontWeight: 600 }}>Tumhara Bhai... ❤️</p>
+
+            <p style={{ fontWeight: 600 }}>Ab isse jyada Cringe nhi hoga mujhse, aur ye sab dekh kar sar par mat chad jana</p>
+
+
+          </motion.div>
         </div>
       </section>
 
-      {/* Playlist */}
-      <section id="playlist" ref={playlistRef}>
-        <div className="container">
-          <motion.div className="section-title" initial="hidden" animate={playlistControls} variants={fadeInUp}>
-            <h2>Birthday Playlist</h2>
-            <p>Songs that remind me of you</p>
-          </motion.div>
-          <motion.div className="playlist-container" initial="hidden" animate={playlistControls} variants={fadeInUp}>
-            <ul className="song-list">
-              {playlist.map((song, index) => (
-                <motion.li
-                  className="song-item"
-                  key={index}
-                  whileHover={{ backgroundColor: "#f9f7fe" }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <FontAwesomeIcon icon={faMusic} style={{ marginRight: "15px", color: "#ff69b4" }} />
-                  <span>{song}</span>
-                </motion.li>
-              ))}
-            </ul>
-          </motion.div>
-        </div>
-      </section>
+
 
       {/* Footer */}
       <footer>
