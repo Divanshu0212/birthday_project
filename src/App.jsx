@@ -188,7 +188,7 @@ const App = () => {
     { src: "IMG-20241010-WA0017.jpg", title: "Ice Cream Chahiye 😭", date: "Roj Ka Hai" },
     { src: "IMG20241205144919.jpg", title: "Bhopal Trip", date: "December 2024" },
     { src: "IMG-20250310-WA0009.jpg", title: "Miniso", date: "March 2025" },
-    { src: "IMG20241202141226.jpg", title: "Puutna Ka Vadh", date: "December 2024" },
+    { src: "IMG20241202141226.jpg", title: "Putna Ka Vadh", date: "December 2024" },
     { src: "IMG-20250314-WA0059.jpg", title: "Holi", date: "March 2024" },
     { src: "IMG-20241030-WA0019.jpg", title: "Random Clicks", date: "Cutie" },
     { src: "IMG-20241203-WA0091.jpg", title: "Random Clicks", date: "Sun Kissed" },
@@ -243,10 +243,6 @@ const App = () => {
         </motion.div>
         <div
           className="scroll-down"
-          onClick={() => {
-            setCurrentSection("gallery")
-            document.getElementById("gallery").scrollIntoView({ behavior: "smooth" })
-          }}
         >
           <FontAwesomeIcon icon={faChevronDown} size="2x" />
         </div>
@@ -320,7 +316,7 @@ const App = () => {
             <p>From me to you</p>
           </motion.div>
           <motion.div className="message-container" initial="hidden" animate={messageControls} variants={fadeInUp}>
-            <p>Dear Sister,</p>
+            <p>Gorilla Ji,</p>
 
             <p>On your special day, I just want to remind you how much you mean to me...</p>
             <p>You have always been there for me whenever I needed you the most.</p>
@@ -342,8 +338,7 @@ const App = () => {
       {/* Footer */}
       <footer>
         <div className="container">
-          <p>Made with ❤️ for my amazing sister. Happy Birthday!</p>
-          <p>© 2025 - Your Secret Birthday Surprise</p>
+          <p>Your 20th Birthday Surprise</p>
         </div>
       </footer>
     </div>
