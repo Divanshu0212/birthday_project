@@ -109,8 +109,7 @@ section {
 
 /* Gallery */
 .gallery {
-  display: block;
-  position: relative;
+  display: block; /* Changed from grid/flex to allow absolute positioning */
 }
 
 .gallery-item {
@@ -119,7 +118,6 @@ section {
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  transition: transform 0.3s ease; /* Smooth hover effect */
 }
 
 .gallery-item img {
@@ -130,21 +128,6 @@ section {
 .gallery-caption {
   padding: 10px;
   text-align: center;
-  font-size: 0.9rem; /* Slightly smaller text to fit reduced image size */
-}
-
-.section-title {
-  color: #333;
-}
-
-.section-title h2 {
-  margin: 0;
-  font-size: 2rem;
-}
-
-.section-title p {
-  margin: 5px 0 0;
-  font-size: 1rem;
 }
 
 /* Modal */

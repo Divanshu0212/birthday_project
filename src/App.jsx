@@ -1,144 +1,231 @@
-import React, { useEffect, useState, useRef } from 'react';
-import Confetti from 'react-confetti';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faMusic } from '@fortawesome/free-solid-svg-icons';
-import { motion, useInView, useAnimation } from 'framer-motion';
-import EnhancedGallery from './components/EnhancedGalllery'; // Import the new component
-import './App.css';
+"use client"
+
+import { useEffect, useState, useRef } from "react"
+import Confetti from "react-confetti"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faChevronDown, faMusic } from "@fortawesome/free-solid-svg-icons"
+import { motion, useInView, useAnimation } from "framer-motion"
+import EnhancedGallery from "./components/EnhancedGalllery" // Make sure path is correct
+import "./App.css"
+
+// Add this CSS to your App.css or create a new file
+const scrollSnapStyles = `
+  html {
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+  }
+  
+  section, header {
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+`
 
 const App = () => {
-  
-  const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-  const [modalOpen, setModalOpen] = useState(false);
-  const [modalContent, setModalContent] = useState({ src: '', caption: '' });
+  const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
+  const [modalOpen, setModalOpen] = useState(false)
+  const [modalContent, setModalContent] = useState({ src: "", caption: "" })
+  const [currentSection, setCurrentSection] = useState("home")
+  const [isScrolling, setIsScrolling] = useState(false)
 
   // Refs for scroll detection
-  const messageRef = useRef(null);
-  const timelineRef = useRef(null);
-  const wishesRef = useRef(null);
-  const playlistRef = useRef(null);
+  const homeRef = useRef(null)
+  const galleryRef = useRef(null)
+  const messageRef = useRef(null)
+  const timelineRef = useRef(null)
+  const wishesRef = useRef(null)
+  const playlistRef = useRef(null)
 
   // Animation controls
-  const messageControls = useAnimation();
-  const timelineControls = useAnimation();
-  const wishesControls = useAnimation();
-  const playlistControls = useAnimation();
+  const messageControls = useAnimation()
+  const timelineControls = useAnimation()
+  const wishesControls = useAnimation()
+  const playlistControls = useAnimation()
 
   // In-view hooks
-  const messageInView = useInView(messageRef, { once: false, amount: 0.2 });
-  const timelineInView = useInView(timelineRef, { once: false, amount: 0.2 });
-  const wishesInView = useInView(wishesRef, { once: false, amount: 0.2 });
-  const playlistInView = useInView(playlistRef, { once: false, amount: 0.2 });
+  const messageInView = useInView(messageRef, { once: false, amount: 0.2 })
+  const timelineInView = useInView(timelineRef, { once: false, amount: 0.2 })
+  const wishesInView = useInView(wishesRef, { once: false, amount: 0.2 })
+  const playlistInView = useInView(playlistRef, { once: false, amount: 0.2 })
+
+  // Add scroll snap CSS to document
+  useEffect(() => {
+    const styleElement = document.createElement("style")
+    styleElement.innerHTML = scrollSnapStyles
+    document.head.appendChild(styleElement)
+
+    return () => {
+      document.head.removeChild(styleElement)
+    }
+  }, [])
+
+  // Implement section-based scrolling
+  useEffect(() => {
+    const sections = [
+      { id: "home", ref: homeRef },
+      { id: "gallery", ref: galleryRef },
+      { id: "message", ref: messageRef },
+      { id: "timeline", ref: timelineRef },
+      { id: "wishes", ref: wishesRef },
+      { id: "playlist", ref: playlistRef },
+    ]
+
+    const handleScroll = () => {
+      if (isScrolling) return
+
+      const scrollPosition = window.scrollY + window.innerHeight / 3
+
+      // Find the current section
+      for (const section of sections) {
+        if (!section.ref.current) continue
+
+        const element = section.ref.current
+        const offsetTop = element.offsetTop
+        const offsetBottom = offsetTop + element.offsetHeight
+
+        if (scrollPosition >= offsetTop && scrollPosition < offsetBottom) {
+          if (currentSection !== section.id) {
+            setCurrentSection(section.id)
+
+            // Scroll to this section
+            setIsScrolling(true)
+            element.scrollIntoView({ behavior: "smooth" })
+
+            // Reset scrolling flag after animation completes
+            setTimeout(() => {
+              setIsScrolling(false)
+            }, 1000)
+
+            break
+          }
+        }
+      }
+    }
+
+    // Throttle scroll event
+    let scrollTimeout
+    const throttledScroll = () => {
+      if (scrollTimeout) return
+
+      scrollTimeout = setTimeout(() => {
+        handleScroll()
+        scrollTimeout = null
+      }, 100)
+    }
+
+    window.addEventListener("scroll", throttledScroll)
+    return () => window.removeEventListener("scroll", throttledScroll)
+  }, [currentSection, isScrolling])
 
   // Countdown Timer
   useEffect(() => {
-    const targetDate = new Date("March 20, 2025 00:00:00").getTime();
+    const targetDate = new Date("March 20, 2025 00:00:00").getTime()
     const updateCountdown = () => {
-      const now = new Date().getTime();
-      const distance = targetDate - now;
-      if (distance < 0) return;
+      const now = new Date().getTime()
+      const distance = targetDate - now
+      if (distance < 0) return
 
       setCountdown({
         days: Math.floor(distance / (1000 * 60 * 60 * 24)),
         hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
         minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
         seconds: Math.floor((distance % (1000 * 60)) / 1000),
-      });
-    };
+      })
+    }
 
-    updateCountdown();
-    const interval = setInterval(updateCountdown, 1000);
-    return () => clearInterval(interval);
-  }, []);
+    updateCountdown()
+    const interval = setInterval(updateCountdown, 1000)
+    return () => clearInterval(interval)
+  }, [])
 
   // Handle Gallery Image Click
   const handleImageClick = (src, caption) => {
-    setModalContent({ src, caption });
-    setModalOpen(true);
-  };
+    setModalContent({ src, caption })
+    setModalOpen(true)
+  }
 
   // Animation Variants
   const fadeInUp = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0, transition: { duration: 1, delay: 0.1 } },
-  };
+  }
 
   const scaleIn = {
     hidden: { opacity: 0, scale: 0.9 },
     visible: { opacity: 1, scale: 1, transition: { duration: 0.5, delay: 0.1 } },
-  };
+  }
 
   // Trigger animations when in view
   useEffect(() => {
-    if (messageInView) messageControls.start("visible");
-    else messageControls.start("hidden");
-  }, [messageInView, messageControls]);
+    if (messageInView) messageControls.start("visible")
+    else messageControls.start("hidden")
+  }, [messageInView, messageControls])
 
   useEffect(() => {
-    if (timelineInView) timelineControls.start("visible");
-    else timelineControls.start("hidden");
-  }, [timelineInView, timelineControls]);
+    if (timelineInView) timelineControls.start("visible")
+    else timelineControls.start("hidden")
+  }, [timelineInView, timelineControls])
 
   useEffect(() => {
-    if (wishesInView) wishesControls.start("visible");
-    else wishesControls.start("hidden");
-  }, [wishesInView, wishesControls]);
+    if (wishesInView) wishesControls.start("visible")
+    else wishesControls.start("hidden")
+  }, [wishesInView, wishesControls])
 
   useEffect(() => {
-    if (playlistInView) playlistControls.start("visible");
-    else playlistControls.start("hidden");
-  }, [playlistInView, playlistControls]);
+    if (playlistInView) playlistControls.start("visible")
+    else playlistControls.start("hidden")
+  }, [playlistInView, playlistControls])
 
   // Data
   const galleryItems = [
-    { src: 'IMG_20241202_142228902_HDR.jpg', title: 'Our Trip to the Beach', date: 'Summer 2024' },
-    { src: 'IMG_20241205_092037673_HDR.jpg', title: 'Family Dinner', date: 'December 2023' },
-    { src: 'IMG-20231218-WA0009.jpg', title: 'Hiking Adventure', date: 'Spring 2024' },
-    { src: 'IMG-20240819-WA0166.jpg', title: 'Concert Night', date: 'October 2024' },
-    { src: 'IMG-20240907-WA0187.jpg', title: 'Coffee Date', date: 'January 2024' },
-    { src: 'IMG-20240930-WA0035.jpg', title: 'Birthday Party', date: 'March 2024' },
-    { src: 'IMG-20241010-WA0017.jpg', title: 'Birthday Party', date: 'March 2024' },
-    { src: 'IMG-20241027-WA0012.jpg', title: 'Birthday Party', date: 'March 2024' },
-    { src: 'IMG-20241030-WA0019.jpg', title: 'Birthday Party', date: 'March 2024' },
-    { src: 'IMG-20241203-WA0091.jpg', title: 'Birthday Party', date: 'March 2024' },
-    { src: 'IMG-20250119-WA0337.jpg', title: 'Birthday Party', date: 'March 2024' },
-    { src: 'IMG-20250217-WA0010.jpg', title: 'Birthday Party', date: 'March 2024' },
-    { src: 'IMG-20250304-WA0003.jpg', title: 'Birthday Party', date: 'March 2024' },
-    { src: 'IMG-20250310-WA0009.jpg', title: 'Birthday Party', date: 'March 2024' },
-    { src: 'IMG-20250314-WA0059.jpg', title: 'Birthday Party', date: 'March 2024' },
-    { src: 'IMG20241202141226.jpg', title: 'Birthday Party', date: 'March 2024' },
-    { src: 'IMG20241205130739.jpg', title: 'Birthday Party', date: 'March 2024' },
-    { src: 'IMG20241205144919.jpg', title: 'Birthday Party', date: 'March 2024' },
-  ];
+    { src: "IMG-20231218-WA0009.jpg", title: "Beda Ghat", date: "Dec 2023" },
+    { src: "IMG-20240819-WA0166.jpg", title: "Raksha Bandhan", date: "August 2024" },
+    { src: "IMG-20240907-WA0187.jpg", title: "Random Clicks", date: "September 2024" },
+    { src: "IMG-20240930-WA0035.jpg", title: "Escape to Dumna", date: "March 2024" },
+    { src: "IMG-20241027-WA0012.jpg", title: "Parle G Heist", date: "January 2025" },
+    { src: "IMG_20241202_142228902_HDR.jpg", title: "Our Trip to the PachMarchi", date: "December 2024" },
+    { src: "IMG_20241205_092037673_HDR.jpg", title: "Bhopal Odyssey", date: "December 2024" },
+    { src: "IMG-20241010-WA0017.jpg", title: "Ice Cream Chahiye 😭", date: "Roj Ka Hai" },
+    { src: "IMG20241205144919.jpg", title: "Bhopal Trip", date: "December 2024" },
+    { src: "IMG-20250310-WA0009.jpg", title: "Miniso", date: "March 2025" },
+    { src: "IMG20241202141226.jpg", title: "Puutna Ka Vadh", date: "December 2024" },
+    { src: "IMG-20250314-WA0059.jpg", title: "Holi", date: "March 2024" },
+    { src: "IMG-20241030-WA0019.jpg", title: "Random Clicks", date: "Cutie" },
+    { src: "IMG-20241203-WA0091.jpg", title: "Random Clicks", date: "Sun Kissed" },
+    { src: "IMG-20250119-WA0337.jpg", title: "Random Clicks", date: "Kitna Bill Ho gaya 😭" },
+    { src: "IMG-20250217-WA0010.jpg", title: "Random Clicks", date: "Velvet Paws" },
+    { src: "IMG-20250304-WA0003.jpg", title: "Random Clicks", date: "Cutie" },
+    { src: "IMG20241205130739.jpg", title: "Birthday Party12", date: "Petal Thief" },
+  ]
 
   const timelineItems = [
-    { year: '2010', text: 'Family vacation where we got lost...', side: 'left' },
-    { year: '2015', text: 'Stayed up all night talking...', side: 'right' },
-    { year: '2018', text: 'Concert where we danced...', side: 'left' },
-    { year: '2020', text: 'Weekly video calls during lockdown...', side: 'right' },
-    { year: '2023', text: 'Incredible road trip...', side: 'left' },
-    { year: '2024', text: 'More adventures to come...', side: 'right' },
-  ];
+    { year: "2010", text: "Family vacation where we got lost...", side: "left" },
+    { year: "2015", text: "Stayed up all night talking...", side: "right" },
+    { year: "2018", text: "Concert where we danced...", side: "left" },
+    { year: "2020", text: "Weekly video calls during lockdown...", side: "right" },
+    { year: "2023", text: "Incredible road trip...", side: "left" },
+    { year: "2024", text: "More adventures to come...", side: "right" },
+  ]
 
   const wishes = [
-    { from: 'Mom', text: 'Happy birthday to my beautiful daughter...' },
-    { from: 'Dad', text: 'To my amazing daughter...' },
-    { from: 'Best Friend', text: 'Happy birthday to my crazy, fun friend...' },
-    { from: 'Grandma', text: 'Wishing my sweet granddaughter...' },
-  ];
+    { from: "Mom", text: "Happy birthday to my beautiful daughter..." },
+    { from: "Dad", text: "To my amazing daughter..." },
+    { from: "Best Friend", text: "Happy birthday to my crazy, fun friend..." },
+    { from: "Grandma", text: "Wishing my sweet granddaughter..." },
+  ]
 
   const playlist = [
-    'Birthday by The Beatles',
-    'Count On Me by Bruno Mars',
-    'Happy by Pharrell Williams',
-    'Sisters by Rosemary Clooney',
-    'You have Got a Friend by James Taylor',
-  ];
+    "Birthday by The Beatles",
+    "Count On Me by Bruno Mars",
+    "Happy by Pharrell Williams",
+    "Sisters by Rosemary Clooney",
+    "You have Got a Friend by James Taylor",
+  ]
 
   return (
     <div className="App">
       {/* Header */}
-      <header id="home">
+      <header id="home" ref={homeRef}>
         <Confetti width={window.innerWidth} height={window.innerHeight} />
         <motion.div className="header-content" initial="hidden" animate="visible" variants={fadeInUp}>
           <h1>Happy Birthday!</h1>
@@ -162,13 +249,21 @@ const App = () => {
             </div>
           </div>
         </motion.div>
-        <div className="scroll-down" onClick={() => window.scrollTo({ top: document.getElementById('gallery').offsetTop, behavior: 'smooth' })}>
+        <div
+          className="scroll-down"
+          onClick={() => {
+            setCurrentSection("gallery")
+            document.getElementById("gallery").scrollIntoView({ behavior: "smooth" })
+          }}
+        >
           <FontAwesomeIcon icon={faChevronDown} size="2x" />
         </div>
       </header>
 
       {/* Enhanced Gallery Component */}
-      <EnhancedGallery galleryItems={galleryItems} handleImageClick={handleImageClick} />
+      <div ref={galleryRef}>
+        <EnhancedGallery galleryItems={galleryItems} handleImageClick={handleImageClick} />
+      </div>
 
       {/* Modal */}
       {modalOpen && (
@@ -179,9 +274,16 @@ const App = () => {
           exit={{ opacity: 0 }}
           onClick={() => setModalOpen(false)}
         >
-          <motion.div className="modal-content" onClick={(e) => e.stopPropagation()} initial={{ scale: 0.9 }} animate={{ scale: 1 }}>
-            <span className="modal-close" onClick={() => setModalOpen(false)}>×</span>
-            <img src={modalContent.src} alt={modalContent.caption} />
+          <motion.div
+            className="modal-content"
+            onClick={(e) => e.stopPropagation()}
+            initial={{ scale: 0.9 }}
+            animate={{ scale: 1 }}
+          >
+            <span className="modal-close" onClick={() => setModalOpen(false)}>
+              ×
+            </span>
+            <img src={modalContent.src || "/placeholder.svg"} alt={modalContent.caption} />
             <div className="modal-caption">{modalContent.caption}</div>
           </motion.div>
         </motion.div>
@@ -219,7 +321,7 @@ const App = () => {
                 initial="hidden"
                 animate={timelineControls}
                 variants={{
-                  hidden: { opacity: 0, x: item.side === 'left' ? -50 : 50 },
+                  hidden: { opacity: 0, x: item.side === "left" ? -50 : 50 },
                   visible: { opacity: 1, x: 0, transition: { duration: 0.5, delay: 0.1 + index * 0.2 } },
                 }}
               >
@@ -271,10 +373,10 @@ const App = () => {
                 <motion.li
                   className="song-item"
                   key={index}
-                  whileHover={{ backgroundColor: '#f9f7fe' }}
+                  whileHover={{ backgroundColor: "#f9f7fe" }}
                   transition={{ duration: 0.3 }}
                 >
-                  <FontAwesomeIcon icon={faMusic} style={{ marginRight: '15px', color: '#ff69b4' }} />
+                  <FontAwesomeIcon icon={faMusic} style={{ marginRight: "15px", color: "#ff69b4" }} />
                   <span>{song}</span>
                 </motion.li>
               ))}
@@ -291,7 +393,8 @@ const App = () => {
         </div>
       </footer>
     </div>
-  );
-};
+  )
+}
 
-export default App;
+export default App
+
